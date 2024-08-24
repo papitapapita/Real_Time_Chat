@@ -20,7 +20,7 @@ io.on('connection', socket => {
     });
 
     socket.on('chatMessage', msg => {
-        socket.broadcast.emit('message', msg);
+        io.emit('message', msg);
     })
 });
 
