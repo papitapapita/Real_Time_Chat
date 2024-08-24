@@ -10,6 +10,18 @@ const io = socketio(server)
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-io.on('connection', socket => console.log('New Connection WS'));
+io.on('connection', socket => {
+    socket.emit('message', 'Welcome to ChatCord');
+
+    socket.broadcast.emit('message', 'A user has joined the chat');
+
+    socket.on('disconnect', () => {
+        io.emit('message', 'User disconnected');
+    });
+
+    socket.on('chatMessage', msg => {
+        socket.broadcast.emit('message', msg);
+    })
+});
 
 server.listen(PORT, () => console.log(`Server Running on port: ${PORT}`));
