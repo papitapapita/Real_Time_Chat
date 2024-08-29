@@ -13,17 +13,20 @@ const io = socketio(server)
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', socket => {
-    socket.emit('message', formatMessage(BOT_NAME, 'Welcome to ChatCord'));
+    socket.on('joinRoom', ( {username, room} ) => {
+        console.log(username, room);
+        socket.emit('message', formatMessage(BOT_NAME, 'Welcome to ChatCord'));
 
-    socket.broadcast.emit('message', formatMessage(BOT_NAME, 'A user has joined the chat'));
-
-    socket.on('disconnect', () => {
-        io.emit('message', formatMessage(BOT_NAME, 'User disconnected'));
+        socket.broadcast.emit('message', formatMessage(BOT_NAME, `${username} has joined the chat`));
     });
 
     socket.on('chatMessage', msg => {
         io.emit('message', formatMessage('User', msg));
     })
+
+    socket.on('disconnect', () => {
+        io.emit('message', formatMessage(BOT_NAME, 'User disconnected'));
+    });
 });
 
 server.listen(PORT, () => console.log(`Server Running on port: ${PORT}`));
