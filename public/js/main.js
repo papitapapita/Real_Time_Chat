@@ -4,7 +4,9 @@ const chatMessages = document.querySelector('.chat-messages');
 
 socket.on('message', message => {
     console.log(message);
-    outputMessage(message); 
+    outputMessage(message);
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
 chatForm.addEventListener('submit', e => {
@@ -13,16 +15,18 @@ chatForm.addEventListener('submit', e => {
     const msg = e.target.elements.msg.value;
 
     socket.emit('chatMessage', msg);
+
+    //clear input
+    e.target.elements.msg.value = "";
+    e.target.elements.msg.focus();
 });
 
 function outputMessage(message) {
     const div = document.createElement('div');
-    div.className = "message";
-    const divChild = `
-    <p class="meta">Brad <span>9:12pm</span></p>
+    div.classList.add("message");
+    div.innerHTML = `<p class="meta">${message.user} <span>${message.time}</span></p>
     <p class="text">
-        ${message}
+        ${message.text}
     </p>`;
-    div.innerHTML = divChild;
     chatMessages.appendChild(div);
 }
